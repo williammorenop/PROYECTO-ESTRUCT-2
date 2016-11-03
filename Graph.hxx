@@ -173,9 +173,9 @@ void  Graph< R >::DFS_C( NodeGraph<R>* n, std::vector< R >& dfs)
 template <typename R>
 void  Graph< R >::plane(  std::vector< R >& vplane)
 {
-  typename  std::vector< NodeGraph<R>* > :: iterator it;
-  for(  it = this->vectorN.begin() ; it != this->vectorN.end() ; ++it )
+
+  for( int a=0;a<this->vectorN.size();a++)
   {
-     vplane.push_back(*it->getDate());
-  }
+     vplane.push_back((this->vectorN[a])->getDate()  );
+      }
 }

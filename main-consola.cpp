@@ -5,22 +5,22 @@
 #include <iostream>
 #include <list>
 #include <cstdlib>
+#include <vector>
 #include <sstream>
+#include "Graph.h"
 
 using namespace std;
 
-string cargarArchivo(list<lugar *> &lugars,string nombrearch);
+string cargarArchivo(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string nombrearch);
 void imprimirLista(list<lugar *> lugars);
+void imprimirGraph(Graph<lugar *>& lugars);
 string imprimirlinea(int numchar, int longitud);
 string imprimirMenu();
 string imprimirGracias();
 void cantidadSitios(list<lugar *> lugars,string tipo);
 int cantidadTotal(list<lugar *> lugars);
-
 void obtenerSitio(list<lugar *> lugars,double x,double y);
-
 void crearSitio(list<lugar *> &lugars,string nombretemp,int tipotemp,double lattemp,double lontemp);
-
 void modificarSitio(list<lugar *> &lugars,string newname,int newtipo,double lat,double lon,double newlat,double newlon);
 list<lugar *>::iterator obtenerSitio2(list<lugar *> &lugars,double x,double y);
 void menuAyuda(string com);
@@ -28,13 +28,13 @@ void menuAyuda(string com);
 void eliminarSitio(list<lugar *> &lugars,double lat,double lon);
 int main()
 {
-  double x , y , xx , yy ;
+  /*double x , y , xx , yy ;
   while( scanf("%lf %lf %lf %lf",&x,&y,&xx,&yy )!=EOF )
   {
     lugar *nn =new lugar ("n",1,xx,yy);
 
     printf("%lf \n", nn->calcularDistanciaM( x , y )  );
-  }
+  }*/
     //
     // char* opcion= new char [100];
     // // lugar* a = new lugar("sda", 2, 2.2, 3.2);
@@ -138,6 +138,7 @@ int main()
     // }
     //
     list< lugar* > lugares;
+    Graph<lugar*> graphlugares;
     string opcion,comando;
     getline( cin , opcion );
     while( opcion != "exit" || opcion != "fin" )
@@ -149,7 +150,7 @@ int main()
       {
         string file;
         ss >> file;
-        cout << cargarArchivo( lugares , file );
+        cout << cargarArchivo(graphlugares, lugares , file );
       }
       else if( comando == "cantSitios" )
       {
@@ -195,9 +196,17 @@ int main()
         ss >> com;
         menuAyuda( com );
       }
+       else if( comando == "mostrarlista" )
+      {
+        imprimirLista(lugares);
+      }
+      else if(comando=="mostrarArreglo")
+      {
+          imprimirGraph( graphlugares);
+      }
       else
       {
-        cout << "Comando erroeno \n";
+        cout << "Comando erroneo \n";
       }
       getline( cin , opcion );
     }
@@ -468,7 +477,7 @@ string imprimirlinea(int numchar, int longitud)
     }
     return linea;
 }
-string cargarArchivo(list<lugar *> &lugars,string nombrearch)
+string cargarArchivo(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string nombrearch)
 {
     //http://www.cplusplus.com/forum/general/100714/
     ////////////////////////////////////////////////
@@ -536,7 +545,10 @@ string cargarArchivo(list<lugar *> &lugars,string nombrearch)
             /* printf("%.7lf",lonl);
              cout<<endl;
              cout << "cadena aux: " << lonl << endl;*/
-            lugars.push_back(new lugar(nombrel, tipol, latl, lonl));
+
+            lugar *temp=new lugar(nombrel, tipol, latl, lonl);
+            graphLugares.addNode(temp);
+            lugars.push_back(temp);
         }
     }
     else
@@ -556,4 +568,16 @@ void imprimirLista(list<lugar *> lugars)
         cout << "-->" << (*it)->getNombre() << "tipo" << (*it)->getTipo()<<endl;
 
     }
+}
+void imprimirGraph(Graph<lugar *>& lugars)
+{
+    vector<lugar*> v;
+    lugars.plane(v);
+
+    for(int a=0;a<v.size();a++)
+    {
+
+        cout<<v[a]->getNombre()<<endl;
+    }
+
 }
