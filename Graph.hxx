@@ -181,3 +181,10 @@ void  Graph< R >::plane(  std::vector< R >& vplane)
      vplane.push_back((this->vectorN[a])->getDate()  );
       }
 }
+
+
+template <typename R>
+int  Graph< R >::cantNodes()
+{
+    return this->vectorN.size();
+}

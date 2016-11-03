@@ -26,6 +26,7 @@ public:
   void DFS_C( NodeGraph<R>* n, std::vector< R >& dfs);
   void plane(  std::vector< R >& vplane);
   void allNode( bool s );
+  int cantNodes();
 };
 
 #include "Graph.hxx"

@@ -17,15 +17,16 @@ void imprimirGraph(Graph<lugar *>& lugars);
 string imprimirlinea(int numchar, int longitud);
 string imprimirMenu();
 string imprimirGracias();
-void cantidadSitios(list<lugar *> lugars,string tipo);
-int cantidadTotal(list<lugar *> lugars);
-void obtenerSitio(list<lugar *> lugars,double x,double y);
-void crearSitio(list<lugar *> &lugars,string nombretemp,int tipotemp,double lattemp,double lontemp);
+void cantidadSitios(Graph<lugar *> lugars,string tipo);
+int cantidadTotal(Graph<lugar *> lugars);
+void menuAyuda(string com);
+void obtenerSitio(Graph<lugar *> lugars,double x,double y);
+void crearSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string nombretemp,int tipotemp,double lattemp,double lontemp);
+
 void modificarSitio(list<lugar *> &lugars,string newname,int newtipo,double lat,double lon,double newlat,double newlon);
 list<lugar *>::iterator obtenerSitio2(list<lugar *> &lugars,double x,double y);
-void menuAyuda(string com);
-
 void eliminarSitio(list<lugar *> &lugars,double lat,double lon);
+
 int main()
 {
     /*double x , y , xx , yy ;
@@ -157,15 +158,15 @@ int main()
             string tipo;
             ss >> tipo;
             if( tipo == "" )
-                cout << "Cantidad Sitios: " << cantidadTotal(lugares) << endl;
+                cout << "Cantidad Sitios: " << cantidadTotal(graphlugares) << endl;
             else
-                cantidadSitios( lugares, tipo );
+                cantidadSitios( graphlugares, tipo );
         }
         else if( comando == "obtenerSitio" )
         {
             double x,y;
             ss >> x >> y;
-            obtenerSitio( lugares, x, y );
+            obtenerSitio( graphlugares, x, y );
         }
 
         else if( comando == "crearSitio" )
@@ -174,7 +175,7 @@ int main()
             int tipo;
             double lat,lon;
             ss >> nombre >> tipo >> lat >> lon;
-            crearSitio( lugares, nombre, tipo, lat, lon );
+            crearSitio(graphlugares ,lugares, nombre, tipo, lat, lon );
         }
         else if( comando == "modificarSitio" )
         {
@@ -338,25 +339,34 @@ string imprimirGracias()
     return gracias;
 }
 
-void crearSitio(list<lugar *> &lugars,string nombretemp,int tipotemp,double lattemp,double lontemp)
+void crearSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string nombretemp,int tipotemp,double lattemp,double lontemp)
 {
-    lugars.push_back(new lugar(nombretemp,tipotemp,lattemp,lontemp));
+
+    lugar *temp=new lugar(nombretemp, tipotemp, lattemp, lontemp);
+
+
+    graphLugares.addNode(temp);
+        lugars.push_back(temp);
     cout<<"El sitio de tipo "<<tipotemp<<" en ("<<lattemp<<","<<lontemp<<") ha sido creado."<<endl;
 
 }
 
-void obtenerSitio(list<lugar *> lugars,double x,double y)
+void obtenerSitio(Graph<lugar *> lugars,double x,double y)
 {
-    if(!lugars.empty())
+    if(lugars.cantNodes()!=0)
     {
         double distancia;
         string nombre;
         int tipo;
         double lat;
         double lon;
-        for (list<lugar *>::iterator it = lugars.begin(); it != lugars.end(); it++)
+
+            vector<lugar*> v;
+         lugars.plane(v);
+
+        for (vector<lugar*>::iterator it=v.begin();it!=v.end();it++)
         {
-            if(it==lugars.begin())
+            if(it==v.begin())
             {
                 distancia=(*it)->calcularDistanciaM(x,y);
                 nombre=(*it)->getNombre();
@@ -411,13 +421,15 @@ list<lugar *>::iterator obtenerSitio2(list<lugar *> &lugars,double x,double y)
     return aux;
 }
 
-void cantidadSitios(list<lugar *> lugars,string tipo)
+void cantidadSitios(Graph<lugar *> lugars,string tipo)
 {
     int cont=0;
     int tipoint=atoi(tipo.c_str());
-    for (list<lugar *>::iterator it = lugars.begin(); it != lugars.end(); it++)
+
+
+    for (int a=0;a<lugars.getList().size();a++)
     {
-        if((*it)->getTipo()==tipoint)
+        if(lugars.getList()[a]->getDate()->getTipo()==tipoint)
         {
             cont++;
         }
@@ -431,44 +443,15 @@ void cantidadSitios(list<lugar *> lugars,string tipo)
         cout<<"Hay "<<cont<<" sitios de tipo "<<tipo<<"\n";
     }
 }
-int cantidadTotal(list<lugar *> lugars)
+
+
+
+int cantidadTotal(Graph<lugar *> lugars)
 {
-    return lugars.size();
+    return lugars.cantNodes();
 }
 
-string imprimirMenu()
-{
-    string menu="";
-    char esi = 201, esd = 187, eii = 200, eid = 188, lv = 186, lh = 205, id = 185,ii = 204;
-    menu=menu
-         +" "+ esi + imprimirlinea(205, 38) + esd + "\n"
-         +" "+ lv + "\t\t\t\t\t" + lv + "\n"
-         +" "+ lv + "\t           MENU       \t\t" + lv + "\n"
-         +" "+ lv + "\t\t\t\t\t" + lv + "\n"
-         +" "+ ii + imprimirlinea(205, 38) + id + "\n"
-         +" "+ lv + "  Comando 1: cargar. (Carga Archivo) \t\t\t" + lv + "\n"
-         +" "+ lv + "  Comando 2: cantSitios (Cantidad de Sitios) \t" + lv + "\n"
-         +" "+ lv + "  Comando 3: obtenerSitiosxy (Obtener Sitio) \t\t" + lv + "\n"
-         +" "+ lv + "  Comando 4: crearSitio (Crear Sitio) \t\t" + lv + "\n"
-         +" "+ lv + "  Comando 5: modificarSitioxy (Modificar Sitio) \t\t" + lv + "\n"
-         +" "+ lv + "  Comando 6: eliminarSitioxy (Eliminar Sitio) \t\t" + lv + "\n"
-         +" "+ lv + "  Comando 7: fin (Salir) \t\t\t" + lv + "\n"
-         +" "+ eii + imprimirlinea(205, 38) + eid + "\n";
-    return menu;
-    /*char esi = 201, esd = 187, eii = 200, eid = 188, lv = 186, lh = 205, id = 185,ii = 204;
-    cout <<" "<< esi << imprimirlinea(205, 38) << esd << endl
-         <<" "<< lv << "\t\t\t\t\t" << lv << endl
-         <<" "<< lv << "\t           MENU       \t\t" << lv << endl
-         <<" "<< lv << "\t\t\t\t\t" << lv << endl
-         <<" "<< ii << imprimirlinea(205, 38) << id << endl
-         <<" "<< lv << "  Opcion 1: Cargar. \t\t\t" << lv << endl
-         <<" "<< lv << "  Opcion 2: Cantidad de Sitios. \t" << lv << endl
-         <<" "<< lv << "  Opcion 3: Obtener Sitio. \t\t" << lv << endl
-         <<" "<< lv << "  Opcion 4: Crear Sitio. \t\t" << lv << endl
-         <<" "<< lv << "  Opcion 5: Modificar Sitio. \t\t" << lv << endl
-         <<" "<< lv << "  Opcion 6: Eliminar Sitio. \t\t" << lv << endl
-         <<" "<< eii << imprimirlinea(205, 38) << eid << endl;*/
-}
+
 string imprimirlinea(int numchar, int longitud)
 {
     char m = numchar;
@@ -578,7 +561,6 @@ void imprimirGraph(Graph<lugar *>& lugars)
 
     for(int a=0; a<v.size(); a++)
     {
-
         cout<<v[a]->getNombre()<<endl;
     }
 
