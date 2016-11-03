@@ -24,6 +24,7 @@ void obtenerSitio(Graph<lugar *> lugars,double x,double y);
 void crearSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string nombretemp,int tipotemp,double lattemp,double lontemp);
 
 void modificarSitio(list<lugar *> &lugars,string newname,int newtipo,double lat,double lon,double newlat,double newlon);
+
 list<lugar *>::iterator obtenerSitio2(list<lugar *> &lugars,double x,double y);
 void eliminarSitio(list<lugar *> &lugars,double lat,double lon);
 
