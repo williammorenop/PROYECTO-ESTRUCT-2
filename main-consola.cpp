@@ -29,7 +29,7 @@ void eliminarSitio(list<lugar *> &lugars,double lat,double lon);
 
 int main()
 {
-    
+
     list< lugar* > lugares;
     Graph<lugar*> graphlugares;
     string opcion,comando;
@@ -470,7 +470,11 @@ void puntosNONESESO(Graph<lugar *>& lugars, int x, int y)
 
     for(int w=0; w<v.size(); w++)
     {
-        for(int a=0; a<v.size(); a++)
+      lugaresNO.clear();
+       lugaresNE.clear();
+       lugaresSO.clear();
+       lugaresSE.clear();
+      for(int a=0; a<v.size(); a++)
         {
 
             if(v[a]->getLat() < v[w]->getLat() && v[a]->getLon() < v[w]->getLon())
@@ -509,7 +513,7 @@ void puntosNONESESO(Graph<lugar *>& lugars, int x, int y)
         lugars.addArist(v[w],menor,distanciamenor);
         menor->setNombre("NO HAY");
         distanciamenor=-1;
-         for(int b=0;b<lugaresNE.size();b++)
+      for(int b=0;b<lugaresNE.size();b++)
         {
             if(b==0)
             {
