@@ -22,11 +22,9 @@ int cantidadTotal(Graph<lugar *> lugars);
 void menuAyuda(string com);
 void obtenerSitio(Graph<lugar *> lugars,double x,double y);
 void crearSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string nombretemp,int tipotemp,double lattemp,double lontemp);
-
-void modificarSitio(list<lugar *> &lugars,string newname,int newtipo,double lat,double lon,double newlat,double newlon);
-
+void modificarSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string newname,int newtipo,double lat,double lon,double newlat,double newlon);
 list<lugar *>::iterator obtenerSitio2(list<lugar *> &lugars,double x,double y);
-void eliminarSitio(list<lugar *> &lugars,double lat,double lon);
+void eliminarSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,double lat,double lon);
 
 int main()
 {
@@ -183,28 +181,26 @@ void menuAyuda( string com )
     }
 }
 
-void eliminarSitio(list<lugar *> &lugars,double lat,double lon)
+void eliminarSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,double lat,double lon)
 {
     if(!lugars.empty())
     {
         list<lugar *>::iterator eliminado=obtenerSitio2(lugars,lat,lon);
         cout<<"El sitio "<<(*eliminado)->getNombre()<<" en las coordenadas ("<<(*eliminado)->getLat()<<","<<(*eliminado)->getLon()<<") ha sido eliminado."<<endl;
         lugars.erase(eliminado);
+        graphLugares.delNode(eliminado);
     }
     else
     {
         cout<<"No se han ingresado lugares."<<endl;
     }
-
-
-
 }
 
-void modificarSitio(list<lugar *> &lugars,string newname,int newtipo,double lat,double lon,double newlat,double newlon)
+void modificarSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string newname,int newtipo,double lat,double lon,double newlat,double newlon);
 {
-    if(!lugars.empty())
+    if(graphLugares.cantNodes()!=0)
     {
-        list<lugar*>::iterator elmodificado =obtenerSitio2(lugars,lat,lon);
+        list<lugar*>::iterator elmodificado = obtenerSitio2(lugars,lat,lon);
         cout<< "La informacion del Sitio "<< (*elmodificado)->getNombre();
         (*elmodificado)->setNombre(newname);
         (*elmodificado)->setTipo(newtipo);
