@@ -2,6 +2,8 @@
 #include <vector>
 
 #include <queue>
+#include <iostream>
+#include <algorithm>
 
 template <typename R>
 bool  Graph< R >::delNode( NodeGraph<R>* n )
@@ -187,4 +189,42 @@ template <typename R>
 int  Graph< R >::cantNodes()
 {
     return this->vectorN.size();
+}
+
+template <typename R>
+void  crearPuntoInfo( int n , std::vector< R > &v )
+{
+  v.clear();
+  vector< R > ord( vectorN.size() );
+  for( int i = 0 ; i < (int) this->vectorN.size() ; ++i )
+      ord[ i ] = this->vectorN[i]->getDate();
+  sort( ord.begin() , ord.end() );
+  int pos = 0;
+  int cont = 0;
+  int tam = ord.size();
+  while( n && tam > 0 )
+  {
+    int lim = (( tam + cont )/n) ;
+    if( lim == 1 )
+      v.push_back( ord[cont] );
+    else if ( lim != 0 )
+    {
+      double A=0;
+      double x,y;
+      x = y = 0;
+      for( int i = 0 ; i  < lim-1 ; ++i)
+      {
+          double temp =( ord[ cont + i ].lon*ord[ cont + i +1 ].lat - ord[ cont +i + 1 ].lon * ord[ cont + i ].lat );
+          A += temp;
+          x += (ord[ cont + i ].lon + ord[ cont + i + 1].lon)*temp;
+          y += (ord[ cont + i ].lat + ord[ cont + i + 1].lat)*temp;
+      }
+      A /= 2;
+      x /= 6*A;
+      y /= 6*A;
+      v.push_back( R(y,x) );
+    }
+    --n;
+    tam -= lim;
+  }
 }

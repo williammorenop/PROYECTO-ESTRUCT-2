@@ -2,7 +2,6 @@
 #define GRAPH
 
 #include <vector>
-#include <vector>
 #include "NodeGraph.h"
 
 template <typename R>
@@ -27,6 +26,7 @@ public:
   void plane(  std::vector< R >& vplane);
   void allNode( bool s );
   int cantNodes();
+  void  crearPuntoInfo( int n , std::vector< R > &v );
 };
 
 #include "Graph.hxx"

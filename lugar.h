@@ -18,6 +18,7 @@ private:
 public:
     lugar();
   lugar(std::string nombre, int tipo, double lat, double lon);
+  lugar( double lat ,double lon ): nombre("") , lat(lat) , lon(lon) {};
   ~lugar();
   std::string getNombre();
   int getTipo();
