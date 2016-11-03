@@ -28,13 +28,13 @@ void menuAyuda(string com);
 void eliminarSitio(list<lugar *> &lugars,double lat,double lon);
 int main()
 {
-  /*double x , y , xx , yy ;
-  while( scanf("%lf %lf %lf %lf",&x,&y,&xx,&yy )!=EOF )
-  {
-    lugar *nn =new lugar ("n",1,xx,yy);
+    /*double x , y , xx , yy ;
+    while( scanf("%lf %lf %lf %lf",&x,&y,&xx,&yy )!=EOF )
+    {
+      lugar *nn =new lugar ("n",1,xx,yy);
 
-    printf("%lf \n", nn->calcularDistanciaM( x , y )  );
-  }*/
+      printf("%lf \n", nn->calcularDistanciaM( x , y )  );
+    }*/
     //
     // char* opcion= new char [100];
     // // lugar* a = new lugar("sda", 2, 2.2, 3.2);
@@ -140,75 +140,75 @@ int main()
     list< lugar* > lugares;
     Graph<lugar*> graphlugares;
     string opcion,comando;
-    getline( cin , opcion );
+    getline( cin, opcion );
     while( opcion != "exit" || opcion != "fin" )
     {
-      stringstream ss( opcion );
+        stringstream ss( opcion );
 
-      ss >> comando;
-      if( comando == "cargar" )
-      {
-        string file;
-        ss >> file;
-        cout << cargarArchivo(graphlugares, lugares , file );
-      }
-      else if( comando == "cantSitios" )
-      {
-        string tipo;
-        ss >> tipo;
-        if( tipo == "" )
-          cout << "Cantidad Sitios: " << cantidadTotal(lugares) << endl;
+        ss >> comando;
+        if( comando == "cargar" )
+        {
+            string file;
+            ss >> file;
+            cout << cargarArchivo(graphlugares, lugares, file );
+        }
+        else if( comando == "cantSitios" )
+        {
+            string tipo;
+            ss >> tipo;
+            if( tipo == "" )
+                cout << "Cantidad Sitios: " << cantidadTotal(lugares) << endl;
+            else
+                cantidadSitios( lugares, tipo );
+        }
+        else if( comando == "obtenerSitio" )
+        {
+            double x,y;
+            ss >> x >> y;
+            obtenerSitio( lugares, x, y );
+        }
+
+        else if( comando == "crearSitio" )
+        {
+            string nombre;
+            int tipo;
+            double lat,lon;
+            ss >> nombre >> tipo >> lat >> lon;
+            crearSitio( lugares, nombre, tipo, lat, lon );
+        }
+        else if( comando == "modificarSitio" )
+        {
+            double lon,lat,newlon,newlat;
+            string nombre;
+            int tipo;
+            ss >> lon >> lat >> nombre >> tipo >> newlat >> newlon;
+            modificarSitio( lugares, nombre,  tipo, lat, lon, newlat, newlon );
+        }
+        else if( comando == "eliminarSitio" )
+        {
+            int lat, lon ;
+            ss >> lat >> lon ;
+            eliminarSitio( lugares, lat, lon );
+        }
+        else if( comando == "ayuda" )
+        {
+            string com;
+            ss >> com;
+            menuAyuda( com );
+        }
+        else if( comando == "mostrarlista" )
+        {
+            imprimirLista(lugares);
+        }
+        else if(comando=="mostrargraph")
+        {
+            imprimirGraph( graphlugares);
+        }
         else
-          cantidadSitios( lugares , tipo );
-      }
-      else if( comando == "obtenerSitio" )
-      {
-        double x,y;
-        ss >> x >> y;
-        obtenerSitio( lugares , x , y );
-      }
-
-      else if( comando == "crearSitio" )
-      {
-        string nombre;
-        int tipo;
-        double lat,lon;
-        ss >> nombre >> tipo >> lat >> lon;
-        crearSitio( lugares , nombre , tipo , lat , lon );
-      }
-      else if( comando == "modificarSitio" )
-      {
-        double lon,lat,newlon,newlat;
-        string nombre;
-        int tipo;
-        ss >> lon >> lat >> nombre >> tipo >> newlat >> newlon;
-        modificarSitio( lugares , nombre,  tipo , lat , lon , newlat, newlon );
-      }
-      else if( comando == "eliminarSitio" )
-      {
-        int lat , lon ;
-        ss >> lat >> lon ;
-        eliminarSitio( lugares , lat , lon );
-      }
-      else if( comando == "ayuda" )
-      {
-        string com;
-        ss >> com;
-        menuAyuda( com );
-      }
-       else if( comando == "mostrarlista" )
-      {
-        imprimirLista(lugares);
-      }
-      else if(comando=="mostrarArreglo")
-      {
-          imprimirGraph( graphlugares);
-      }
-      else
-      {
-        cout << "Comando erroneo \n";
-      }
-      getline( cin , opcion );
+        {
+            cout << "Comando erroneo \n";
+        }
+        getline( cin, opcion );
     }
     cout<<imprimirGracias();
 
@@ -217,72 +217,74 @@ int main()
 }
 
 
-void menuAyuda( string com ){
+void menuAyuda( string com )
+{
     int c=0;
     if(com == "cargar" )
-       c=1;
+        c=1;
     else if(com == "cantSitios" )
-       c=2;
+        c=2;
     else if(com == "obtenerSitioxy" )
-       c=3;
+        c=3;
     else if(com == "crearStitio" )
-       c=4;
+        c=4;
     else if(com == "modificarSitioxy" )
-       c=5;
+        c=5;
     else if(com == "eliminarSitioxy" )
-       c=6;
+        c=6;
     else if(com == "fin" )
-       c=7;
+        c=7;
 
-    switch(c){
+    switch(c)
+    {
     case 1:
-        {
-            cout<<"para cargar archivo use el siguiente formato: cargar <nombre del archivo>"<<endl;
-            break;
-        }
+    {
+        cout<<"para cargar archivo use el siguiente formato: cargar <nombre del archivo>"<<endl;
+        break;
+    }
     case 2:
-        {
-            cout<<"para saber la cantidad de sitios ingrese el siguiente formato:"<<endl;
-            cout<<"cantSitios <el tipo de sitios de que se quieren contar>"<<endl;
-            cout<<"o"<<endl;
-            cout<<"canSitios T (para saber la cantidad total de sitios)"<<endl;
-            break;
-        }
+    {
+        cout<<"para saber la cantidad de sitios ingrese el siguiente formato:"<<endl;
+        cout<<"cantSitios <el tipo de sitios de que se quieren contar>"<<endl;
+        cout<<"o"<<endl;
+        cout<<"canSitios T (para saber la cantidad total de sitios)"<<endl;
+        break;
+    }
     case 3:
-        {
-            cout<<"para saber que sitio esta ubicado en unas coordenadas especificas se sigue el siguiente formato:"<<endl;
-            cout<<" obtenerSitioxy <insertar coordenada x> <insertar coordenada y> "<<endl;
-            break;
-        }
+    {
+        cout<<"para saber que sitio esta ubicado en unas coordenadas especificas se sigue el siguiente formato:"<<endl;
+        cout<<" obtenerSitioxy <insertar coordenada x> <insertar coordenada y> "<<endl;
+        break;
+    }
     case 4:
-        {
-            cout<<"para crear un nuevo sitio se utiliza el siguiente formato:"<<endl;
-            cout<<"crearStitio <nombre> <tipo> <latitud> <longitud>"<<endl;
-            break;
-        }
+    {
+        cout<<"para crear un nuevo sitio se utiliza el siguiente formato:"<<endl;
+        cout<<"crearStitio <nombre> <tipo> <latitud> <longitud>"<<endl;
+        break;
+    }
     case 5:
-        {
-            cout<<"para modificar un sitioespecifico se debe utilizar el sigiente formato: "<<endl;
-            cout<<"modificarSitioxy <latitud actual> <longitud acutal> <nuevo nombre> <nuevo tipo> <nueva latitud> <nueva longitud>"<<endl;
-            break;
-        }
+    {
+        cout<<"para modificar un sitioespecifico se debe utilizar el sigiente formato: "<<endl;
+        cout<<"modificarSitioxy <latitud actual> <longitud acutal> <nuevo nombre> <nuevo tipo> <nueva latitud> <nueva longitud>"<<endl;
+        break;
+    }
     case 6:
-        {
-            cout<<"para eliminar un lugar especifico se utiliza el siguiente formato: "<<endl;
-            cout<<"eliminarSitioxy <insetar coordenada x> <insertar coordenada y> "<<endl;
-            break;
-        }
+    {
+        cout<<"para eliminar un lugar especifico se utiliza el siguiente formato: "<<endl;
+        cout<<"eliminarSitioxy <insetar coordenada x> <insertar coordenada y> "<<endl;
+        break;
+    }
     case 7:
-        {
-            cout<<"para salir del programa se utiliza el siguiente comando: "<<endl;
-            cout<<"fin"<<endl;
-            break;
-        }
+    {
+        cout<<"para salir del programa se utiliza el siguiente comando: "<<endl;
+        cout<<"fin"<<endl;
+        break;
+    }
     default:
-        {
-            cout<<"el comando escrito no existe"<<endl;
-            break;
-        }
+    {
+        cout<<"el comando escrito no existe"<<endl;
+        break;
+    }
 
     }
 }
@@ -574,10 +576,115 @@ void imprimirGraph(Graph<lugar *>& lugars)
     vector<lugar*> v;
     lugars.plane(v);
 
-    for(int a=0;a<v.size();a++)
+    for(int a=0; a<v.size(); a++)
     {
 
         cout<<v[a]->getNombre()<<endl;
     }
+
+}
+
+void puntosNONESESO(Graph<lugar *>& lugars, int x, int y)
+{
+    vector<lugar*> lugaresNO;
+    vector<lugar*> lugaresNE;
+    vector<lugar*> lugaresSO;
+    vector<lugar*> lugaresSE;
+
+    vector<lugar*> v;
+    lugars.plane(v);
+
+    for(int w=0; w<v.size(); w++)
+    {
+        for(int a=0; a<v.size(); a++)
+        {
+
+            if(v[a]->getLat() < v[w]->getLat() && v[a]->getLon() < v[w]->getLon())
+            {
+                lugaresNO.push_back(v[a]);
+            }
+            else if(v[a]->getLat() > v[w]->getLat() && v[a]->getLon() < v[w]->getLon())
+            {
+                lugaresNE.push_back(v[a]);
+            }
+            else if(v[a]->getLat() <v[w]->getLat() && v[a]->getLon() > v[w]->getLon())
+            {
+                lugaresSO.push_back(v[a]);
+            }
+            else if(v[a]->getLat() > v[w]->getLat() && v[a]->getLon() > v[w]->getLon())
+            {
+                lugaresSE.push_back(v[a]);
+            }
+        }
+        lugar* menor=new lugar();
+        menor->setNombre("NO HAY");
+        double distanciamenor=-1;
+        for(int b=0;b<lugaresNO.size();b++)
+        {
+            if(b==0)
+            {
+                menor=lugaresNO[b];
+                distanciamenor=v[w]->calcularDistanciaM(lugaresNO[b]->getLat(),lugaresNO[b]->getLon());
+            }
+            else if((v[w]->calcularDistanciaM(lugaresNO[b]->getLat(),lugaresNO[b]->getLon()))<distanciamenor)
+            {
+                menor=lugaresNO[b];
+                distanciamenor=(v[w]->calcularDistanciaM(lugaresNO[b]->getLat(),lugaresNO[b]->getLon()));
+            }
+        }
+        lugars.addArist(v[w],menor,distanciamenor);
+        menor->setNombre("NO HAY");
+        distanciamenor=-1;
+         for(int b=0;b<lugaresNE.size();b++)
+        {
+            if(b==0)
+            {
+                menor=lugaresNE[b];
+                distanciamenor=v[w]->calcularDistanciaM(lugaresNE[b]->getLat(),lugaresNE[b]->getLon());
+            }
+            else if((v[w]->calcularDistanciaM(lugaresNE[b]->getLat(),lugaresNE[b]->getLon()))<distanciamenor)
+            {
+                menor=lugaresNE[b];
+                distanciamenor=(v[w]->calcularDistanciaM(lugaresNE[b]->getLat(),lugaresNE[b]->getLon()));
+            }
+        }
+        lugars.addArist(v[w],menor,distanciamenor);
+        menor->setNombre("NO HAY");
+        distanciamenor=-1;
+         for(int b=0;b<lugaresSO.size();b++)
+        {
+            if(b==0)
+            {
+                menor=lugaresSO[b];
+                distanciamenor=v[w]->calcularDistanciaM(lugaresSO[b]->getLat(),lugaresSO[b]->getLon());
+            }
+            else if((v[w]->calcularDistanciaM(lugaresSO[b]->getLat(),lugaresSO[b]->getLon()))<distanciamenor)
+            {
+                menor=lugaresSO[b];
+                distanciamenor=(v[w]->calcularDistanciaM(lugaresSO[b]->getLat(),lugaresSO[b]->getLon()));
+            }
+        }
+        lugars.addArist(v[w],menor,distanciamenor);
+        menor->setNombre("NO HAY");
+        distanciamenor=-1;
+         for(int b=0;b<lugaresSE.size();b++)
+        {
+            if(b==0)
+            {
+                menor=lugaresSE[b];
+                distanciamenor=v[w]->calcularDistanciaM(lugaresSE[b]->getLat(),lugaresSE[b]->getLon());
+            }
+            else if((v[w]->calcularDistanciaM(lugaresSE[b]->getLat(),lugaresSE[b]->getLon()))<distanciamenor)
+            {
+                menor=lugaresSE[b];
+                distanciamenor=(v[w]->calcularDistanciaM(lugaresSE[b]->getLat(),lugaresSE[b]->getLon()));
+            }
+        }
+
+
+
+
+    }
+
 
 }

@@ -49,6 +49,8 @@ bool  Graph< R >::addArist( R dateOrigin, R dateToGo, int weight ){
     return 1;
 }
 
+
+
 template <typename R>
 NodeGraph < R >* Graph< R >::findNode( R date )
 {

@@ -7,6 +7,14 @@
 
 
 
+lugar::lugar()
+
+{
+
+
+};
+
+
 
 lugar::lugar(std::string nombre, int tipo, double lat, double lon) {
   this->nombre = nombre;
