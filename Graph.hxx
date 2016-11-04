@@ -207,6 +207,8 @@ void  Graph< R >::crearPuntoInfo( int n , std::vector< std::pair< double , doubl
   int pos = 0;
   int cont = 0;
   int tam = ord.size();
+  if( n > tam )
+    n=tam;
   while( n && tam > 0 )
   {
     int lim = (( tam  )/n) ;
