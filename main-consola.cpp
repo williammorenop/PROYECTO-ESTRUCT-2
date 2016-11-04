@@ -109,10 +109,35 @@ int main()
         {
             imprimirGraph( graphlugares);
         }
+        else if( comando == "crearPuntoInfo" )
+        {
+          int n;
+          ss >> n;
+          vector< pair< double , double > > v;
+          graphlugares.crearPuntoInfo( n , v );
+          for( int i = 0 ; i < v.size() ; ++i )
+          {
+            printf("-\tPunto [%d] ubicado en (%lf, %lf).\n", i , v[i].first, v[i].second );
+            // printf("%lf %lf\n", v[i].first, v[i].second );
+          }
+        }
+        else if( comando == "buscarXUbicacion" )
+        {
+          double xMax,xMin,yMax,yMin;
+          ss >> xMax >> yMax >> xMin >> yMin;
+          vector< lugar* > v;
+          graphlugares.buscarXUbicacion( xMax , yMax , xMin , yMin , v );
+          for( int i = 0 ; i < (int)v.size() ; ++i )
+          {
+            printf("\t- %s de tipo %d, ubicado en (%lf,%lf).\n", v[i]->getNombre().c_str() , v[i]->getTipo() , v[i]->getLat() , v[i]->getLon() );
+          }
+          // cout << "sali" << endl;
+        }
         else
         {
             cout << "Comando erroneo \n";
         }
+
         getline( cin, opcion );
     }
     cout<<imprimirGracias();
@@ -129,16 +154,22 @@ void menuAyuda( string com )
         c=1;
     else if(com == "cantSitios" )
         c=2;
-    else if(com == "obtenerSitioxy" )
+    else if(com == "obtenerSitio" )
         c=3;
     else if(com == "crearStitio" )
         c=4;
-    else if(com == "modificarSitioxy" )
+    else if(com == "modificarSitio" )
         c=5;
-    else if(com == "eliminarSitioxy" )
+    else if(com == "eliminarSitio" )
         c=6;
     else if(com == "fin" )
         c=7;
+        else if(com == "buscarVecinos" )
+            c=8;
+            else if(com == "buscarXUbicacion" )
+                c=9;
+                else if(com == "crearPuntoInfo" )
+                    c=10;
 
     switch(c)
     {
@@ -169,7 +200,7 @@ void menuAyuda( string com )
     }
     case 5:
     {
-        cout<<"para modificar un sitioespecifico se debe utilizar el sigiente formato: "<<endl;
+        cout<<"para modificar un sitio especifico se debe utilizar el sigiente formato: "<<endl;
         cout<<"modificarSitioxy <latitud actual> <longitud acutal> <nuevo nombre> <nuevo tipo> <nueva latitud> <nueva longitud>"<<endl;
         break;
     }
@@ -183,6 +214,24 @@ void menuAyuda( string com )
     {
         cout<<"para salir del programa se utiliza el siguiente comando: "<<endl;
         cout<<"fin"<<endl;
+        break;
+    }
+    case 8:
+    {
+        cout<<"para  los sitios más cercanos en las 4 coordenadas NE, NO, SE y SO: "<<endl;
+        cout<<"buscarVecinos x y"<<endl;
+        break;
+    }
+    case 9:
+    {
+        cout<<"para buscar lugares en un rango: "<<endl;
+        cout<<"buscarXUbicacion xmax ymax xmin ymin"<<endl;
+        break;
+    }
+    case 10:
+    {
+        cout<<"para ubicar puntos de informacion en lo spuntos mas estrategicos: "<<endl;
+        cout<<"crearPuntoInfo <numero de puntos>"<<endl;
         break;
     }
     default:
@@ -328,7 +377,7 @@ lugar * obtenerSitio3(Graph<lugar *> &lugars,double x,double y)
 {
     double distancia;
     lugar* aux;
-    for (int w=0;w<lugars.getList().size();w++)
+    for (int w=0; w<lugars.getList().size(); w++)
     {
         //cout<<x<<" "<<y <<" " <<lugars.getList()[w]->getDate()->getLat()<<" "<<lugars.getList()[w]->getDate()->getLon()<<" ";
         //cout<<lugars.getList()[w]->getDate()->getNombre()<<"-----"<<distancia<<"______"<<(lugars.getList()[w])->getDate()->calcularDistanciaM(x,y)<<"\n";
@@ -342,7 +391,7 @@ lugar * obtenerSitio3(Graph<lugar *> &lugars,double x,double y)
             if((((lugars.getList()[w])->getDate())->calcularDistanciaM(x,y))< distancia)
             {
                 distancia=(((lugars.getList()[w])->getDate())->calcularDistanciaM(x,y));
-                 aux=lugars.getList()[w]->getDate();
+                aux=lugars.getList()[w]->getDate();
             }
         }
         //printf("\n pipi -- %lf ----  %lf ---",distancia ,((lugars.getList()[w])->getDate()->calcularDistanciaM(x,y)));
@@ -508,9 +557,9 @@ void armarGrafo(Graph<lugar *>& lugars)
         lugar* temp=new lugar();
         temp->setNombre("NO HAY");
         temp->setLat(90000);
-         temp->setLon(90000);
+        temp->setLon(90000);
 
-         lugar* menor=temp;
+        lugar* menor=temp;
         double distanciamenor=-1;
         for(int b=0; b<lugaresNO.size(); b++)//SO
         {
@@ -525,9 +574,10 @@ void armarGrafo(Graph<lugar *>& lugars)
                 distanciamenor=(v[w]->calcularDistanciaM(lugaresNO[b]->getLat(),lugaresNO[b]->getLon()));
             }
         }
+
         if(menor==temp)
         {
-            lugars.findNode(v[w])->getVector().push_back(make_pair(new NodeGraph<lugar*>(menor),distanciamenor));
+            lugars.findNode(v[w])->pushvecino(menor,distanciamenor);
         }
         else
             lugars.addArist(v[w],menor,distanciamenor);
@@ -550,7 +600,7 @@ void armarGrafo(Graph<lugar *>& lugars)
             }
         }
         if(menor==temp)
-           lugars.findNode(v[w])->getVector().push_back(make_pair(new NodeGraph<lugar*>(menor),distanciamenor));
+            lugars.findNode(v[w])->pushvecino(menor,distanciamenor);
         else
             lugars.addArist(v[w],menor,distanciamenor);
 
@@ -570,10 +620,10 @@ void armarGrafo(Graph<lugar *>& lugars)
             }
         }
         if(menor==temp)
-            lugars.findNode(v[w])->getVector().push_back(make_pair(new NodeGraph<lugar*>(menor),distanciamenor));
+            lugars.findNode(v[w])->pushvecino(menor,distanciamenor);
         else
             lugars.addArist(v[w],menor,distanciamenor);
-       menor=temp;
+        menor=temp;
         distanciamenor=-1;
         for(int b=0; b<lugaresSE.size(); b++)
         {
@@ -588,8 +638,9 @@ void armarGrafo(Graph<lugar *>& lugars)
                 distanciamenor=(v[w]->calcularDistanciaM(lugaresSE[b]->getLat(),lugaresSE[b]->getLon()));
             }
         }
+
         if(menor==temp)
-          lugars.findNode(v[w])->getVector().push_back(make_pair(new NodeGraph<lugar*>(menor),distanciamenor));
+            lugars.findNode(v[w])->pushvecino(menor,distanciamenor);
         else
             lugars.addArist(v[w],menor,distanciamenor);
     }
@@ -602,26 +653,19 @@ void mostrarVecinosNONESOSE(Graph<lugar *>& lugars, double ylat, double xlon)
     cout<<"armado"<<endl;
     if(lugars.cantNodes()!=0)
     {
-        cout<<"Entre 1"<<endl;
         lugar* temp;
         temp=obtenerSitio3(lugars,ylat,xlon);
-        cout<<temp->getNombre()<<endl;
-       cout<<lugars.findNode(temp)->getVector().size()<<endl;
-       cout<<lugars.findNode(temp)->getVector()[0].first->getDate()->getNombre();
         if(temp!=NULL)
         {
-            cout<<" entre 2"<<endl;
             cout<<"Los vecinos del sitio "<<temp->getNombre()
-            <<" son: al SO "<<lugars.findNode(temp)->getVector()[0].first->getDate()->getNombre()
-            <<", al NO "<<lugars.findNode(temp)->getVector()[1].first->getDate()->getNombre()
-            <<", al SE "<<lugars.findNode(temp)->getVector()[2].first->getDate()->getNombre()
-            <<", al NE "<<lugars.findNode(temp)->getVector()[3].first->getDate()->getNombre();
+                <<" son: al SO "<<lugars.findNode(temp)->getVector()[0].first->getDate()->getNombre()
+                <<", al NO "<<lugars.findNode(temp)->getVector()[1].first->getDate()->getNombre()
+                <<", al SE "<<lugars.findNode(temp)->getVector()[2].first->getDate()->getNombre()
+                <<", al NE "<<lugars.findNode(temp)->getVector()[3].first->getDate()->getNombre()<<".";
         }
-        cout<<"sali"<<endl;
-
     }
     else
     {
         cout<<"No se han ingresado lugares."<<endl;
     }
- }
+}

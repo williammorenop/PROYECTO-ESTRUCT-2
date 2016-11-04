@@ -52,3 +52,7 @@ R NodeGraph< R >::getDate()
 {
   return this->date;
 }
+template <typename R>
+void NodeGraph< R >::pushvecino(R n , int distancia){
+    this->vectorN.push_back(std::make_pair(new NodeGraph< R > (n),distancia));
+}

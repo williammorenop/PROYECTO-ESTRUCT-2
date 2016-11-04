@@ -15,7 +15,6 @@ public:
   std::vector< NodeGraph<R>* > getList();
   bool addNode( R date );
   bool addArist( R dateOrigin, R dateToGo, int weight );
-
   NodeGraph< R >* findNode( R date );
   bool delNode( R date );
   bool delNode( NodeGraph<R>* n );

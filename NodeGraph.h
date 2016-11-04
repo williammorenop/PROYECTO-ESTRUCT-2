@@ -19,9 +19,9 @@ public:
   std::vector< std::pair< NodeGraph< R >* , int > > getVector();
   bool delArist(NodeGraph<R>* n);
   bool addNode( NodeGraph<R>* n , int weight );
-  
   void setVisited( bool s );
   bool getVisited( );
+  void pushvecino(R n , int distancia);
   R getDate();
 
 };
