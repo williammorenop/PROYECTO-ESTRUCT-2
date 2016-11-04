@@ -8,6 +8,7 @@
 #include <vector>
 #include <sstream>
 #include "Graph.h"
+#include "NodeGraph.h"
 
 using namespace std;
 
@@ -25,6 +26,10 @@ void crearSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string nombre
 void modificarSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string newname,int newtipo,double lat,double lon,double newlat,double newlon);
 list<lugar *>::iterator obtenerSitio2(list<lugar *> &lugars,double x,double y);
 void eliminarSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,double lat,double lon);
+
+void armarGrafo(Graph<lugar *>& lugars);
+void mostrarVecinosNONESOSE(Graph<lugar *>& lugars, double ylat, double xlon);
+lugar * obtenerSitio3(Graph<lugar *> &lugars,double x,double y);
 
 int main()
 {
@@ -66,7 +71,7 @@ int main()
             int tipo;
             double lat,lon;
             ss >> nombre >> tipo >> lat >> lon;
-            crearSitio(graphlugares ,lugares, nombre, tipo, lat, lon );
+            crearSitio(graphlugares,lugares, nombre, tipo, lat, lon );
         }
         else if( comando == "modificarSitio" )
         {
@@ -74,14 +79,22 @@ int main()
             string nombre;
             int tipo;
             ss >> lon >> lat >> nombre >> tipo >> newlat >> newlon;
-            modificarSitio( lugares, nombre,  tipo, lat, lon, newlat, newlon );
+            modificarSitio(graphlugares, lugares, nombre,  tipo, lat, lon, newlat, newlon );
         }
         else if( comando == "eliminarSitio" )
         {
             int lat, lon ;
             ss >> lat >> lon ;
-            eliminarSitio( lugares, lat, lon );
+            eliminarSitio(graphlugares, lugares, lat, lon );
         }
+
+        else if( comando == "buscarVecinos" )
+        {
+            int lat, lon ;
+            ss >> lat >> lon ;
+            mostrarVecinosNONESOSE(graphlugares,lat,lon);
+        }
+
         else if( comando == "ayuda" )
         {
             string com;
@@ -188,7 +201,8 @@ void eliminarSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,double lat
         list<lugar *>::iterator eliminado=obtenerSitio2(lugars,lat,lon);
         cout<<"El sitio "<<(*eliminado)->getNombre()<<" en las coordenadas ("<<(*eliminado)->getLat()<<","<<(*eliminado)->getLon()<<") ha sido eliminado."<<endl;
         lugars.erase(eliminado);
-        graphLugares.delNode(eliminado);
+        lugar* tamp=*eliminado;
+        graphLugares.delNode(tamp);
     }
     else
     {
@@ -196,7 +210,7 @@ void eliminarSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,double lat
     }
 }
 
-void modificarSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string newname,int newtipo,double lat,double lon,double newlat,double newlon);
+void modificarSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string newname,int newtipo,double lat,double lon,double newlat,double newlon)
 {
     if(graphLugares.cantNodes()!=0)
     {
@@ -235,7 +249,7 @@ void crearSitio(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string nombre
 
 
     graphLugares.addNode(temp);
-        lugars.push_back(temp);
+    lugars.push_back(temp);
     cout<<"El sitio de tipo "<<tipotemp<<" en ("<<lattemp<<","<<lontemp<<") ha sido creado."<<endl;
 
 }
@@ -250,10 +264,10 @@ void obtenerSitio(Graph<lugar *> lugars,double x,double y)
         double lat;
         double lon;
 
-            vector<lugar*> v;
-         lugars.plane(v);
+        vector<lugar*> v;
+        lugars.plane(v);
 
-        for (vector<lugar*>::iterator it=v.begin();it!=v.end();it++)
+        for (vector<lugar*>::iterator it=v.begin(); it!=v.end(); it++)
         {
             if(it==v.begin())
             {
@@ -310,13 +324,35 @@ list<lugar *>::iterator obtenerSitio2(list<lugar *> &lugars,double x,double y)
     return aux;
 }
 
+lugar * obtenerSitio3(Graph<lugar *> &lugars,double x,double y)
+{
+    double distancia;
+    lugar* aux;
+    for (int w=0;w<lugars.getList().size();w++)
+    {
+        if(w==0)
+        {
+            distancia=(lugars.getList()[w])->getDate()->calcularDistanciaM(x,y);
+            aux=lugars.getList()[w]->getDate();
+        }
+        else
+        {
+            if(((lugars.getList()[w])->getDate()->calcularDistanciaM(x,y))<distancia)
+            {
+                 aux=lugars.getList()[w]->getDate();
+            }
+        }
+    }
+    return aux;
+}
+
 void cantidadSitios(Graph<lugar *> lugars,string tipo)
 {
     int cont=0;
     int tipoint=atoi(tipo.c_str());
 
 
-    for (int a=0;a<lugars.getList().size();a++)
+    for (int a=0; a<lugars.getList().size(); a++)
     {
         if(lugars.getList()[a]->getDate()->getTipo()==tipoint)
         {
@@ -364,10 +400,7 @@ string cargarArchivo(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string n
     {
         char *token;
         int cant, numtipos;
-
         archivo.getline(linea, sizeof(linea));
-
-        //cout << linea << endl;
         token = strtok(linea, "\t");
         cant = atoi(token);
         token = strtok(NULL, "\t");
@@ -377,23 +410,14 @@ string cargarArchivo(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string n
 
         for (int w = 0; w < cant; w++)
         {
-
             archivo.getline(linea, sizeof(linea));
-            //cout << linea << endl;
-
-            // NOMBRE
             token = strtok(linea, "\t");
             char nombre[10], tipo[10], lat[10], lon[10];
             int tipol;
             double latl, lonl;
-
-            //  cout << "token: " << token << endl;
             strcpy(nombre, token);
             string nombrel(nombre);
-            // cout << "cadena aux: " << nombrel << endl;
-            // TIPO
             token = strtok(NULL, "\t");
-            //  cout << "token: " << token << endl;
             strcpy(tipo, token);
             tipol = atoi(tipo);
             if (tipol < 0 && tipol > numtipos)
@@ -401,25 +425,12 @@ string cargarArchivo(Graph<lugar *> &graphLugares,list<lugar *> &lugars,string n
                 archivo.close();
                 return "FALLO!\n";
             }
-            // cout << "cadena aux: " << tipol << endl;
-            // LAT
             token = strtok(NULL, "\t");
-            //  cout << "token: " << token << endl;
             strcpy(lat, token);
-            // IPORTANTE: double atof (const char* str);
             latl = atof(lat);
-            // cout << "cadena aux: " << latl << endl;
-            // lON
             token = strtok(NULL, "\t");
-            // cout << "token: " << token << endl;
             strcpy(lon, token);
             lonl = atof(lon);
-            // lonl=3.0035847;
-            // cout<<endl;
-            /* printf("%.7lf",lonl);
-             cout<<endl;
-             cout << "cadena aux: " << lonl << endl;*/
-
             lugar *temp=new lugar(nombrel, tipol, latl, lonl);
             graphLugares.addNode(temp);
             lugars.push_back(temp);
@@ -440,38 +451,35 @@ void imprimirLista(list<lugar *> lugars)
     for (list<lugar *>::iterator it = lugars.begin(); it != lugars.end(); it++)
     {
         cout << "-->" << (*it)->getNombre() << "tipo" << (*it)->getTipo()<<endl;
-
     }
 }
 void imprimirGraph(Graph<lugar *>& lugars)
 {
     vector<lugar*> v;
     lugars.plane(v);
-
     for(int a=0; a<v.size(); a++)
     {
         cout<<v[a]->getNombre()<<endl;
     }
-
 }
 
-void puntosNONESESO(Graph<lugar *>& lugars, int x, int y)
+void armarGrafo(Graph<lugar *>& lugars)
 {
     vector<lugar*> lugaresNO;
     vector<lugar*> lugaresNE;
     vector<lugar*> lugaresSO;
     vector<lugar*> lugaresSE;
-
     vector<lugar*> v;
     lugars.plane(v);
 
     for(int w=0; w<v.size(); w++)
     {
-      lugaresNO.clear();
-       lugaresNE.clear();
-       lugaresSO.clear();
-       lugaresSE.clear();
-      for(int a=0; a<v.size(); a++)
+        lugaresNO.clear();
+        lugaresNE.clear();
+        lugaresSO.clear();
+        lugaresSE.clear();
+
+        for(int a=0; a<v.size(); a++)
         {
 
             if(v[a]->getLat() < v[w]->getLat() && v[a]->getLon() < v[w]->getLon())
@@ -491,10 +499,13 @@ void puntosNONESESO(Graph<lugar *>& lugars, int x, int y)
                 lugaresSE.push_back(v[a]);
             }
         }
+        cout<<"no"<<lugaresNO.size()<<"ne"<<lugaresNE.size()<<"se"<<lugaresSE.size()<<"so"<<lugaresSO.size()<<"\n";
         lugar* menor=new lugar();
         menor->setNombre("NO HAY");
+        menor->setLat(90000);
+         menor->setLon(90000);
         double distanciamenor=-1;
-        for(int b=0;b<lugaresNO.size();b++)
+        for(int b=0; b<lugaresNO.size(); b++)
         {
             if(b==0)
             {
@@ -508,9 +519,12 @@ void puntosNONESESO(Graph<lugar *>& lugars, int x, int y)
             }
         }
         lugars.addArist(v[w],menor,distanciamenor);
+        /*
         menor->setNombre("NO HAY");
+        menor->setLat(90000);
+         menor->setLon(90000);
         distanciamenor=-1;
-      for(int b=0;b<lugaresNE.size();b++)
+        for(int b=0; b<lugaresNE.size(); b++)
         {
             if(b==0)
             {
@@ -524,9 +538,11 @@ void puntosNONESESO(Graph<lugar *>& lugars, int x, int y)
             }
         }
         lugars.addArist(v[w],menor,distanciamenor);
+        /*
         menor->setNombre("NO HAY");
+
         distanciamenor=-1;
-         for(int b=0;b<lugaresSO.size();b++)
+        for(int b=0; b<lugaresSO.size(); b++)
         {
             if(b==0)
             {
@@ -542,7 +558,7 @@ void puntosNONESESO(Graph<lugar *>& lugars, int x, int y)
         lugars.addArist(v[w],menor,distanciamenor);
         menor->setNombre("NO HAY");
         distanciamenor=-1;
-         for(int b=0;b<lugaresSE.size();b++)
+        for(int b=0; b<lugaresSE.size(); b++)
         {
             if(b==0)
             {
@@ -554,12 +570,36 @@ void puntosNONESESO(Graph<lugar *>& lugars, int x, int y)
                 menor=lugaresSE[b];
                 distanciamenor=(v[w]->calcularDistanciaM(lugaresSE[b]->getLat(),lugaresSE[b]->getLon()));
             }
+        }*/
+    }
+}
+
+void mostrarVecinosNONESOSE(Graph<lugar *>& lugars, double ylat, double xlon)
+{
+
+    armarGrafo(lugars);
+    cout<<"armado"<<endl;
+    if(lugars.cantNodes()!=0)
+    {
+        cout<<"Entre 1"<<endl;
+        lugar* temp;
+        temp=obtenerSitio3(lugars,ylat,xlon);
+        cout<<temp->getNombre()<<endl;
+       cout<<lugars.findNode(temp)->getVector().size()<<endl;
+       cout<<lugars.findNode(temp)->getVector()[0].first->getDate()->getNombre();
+        if(temp!=NULL)
+        {
+            cout<<" entre 2"<<endl;
+            cout<<"Los vecinos del sitio "<<temp->getNombre()
+            /*<</*" son: al NE "<<lugars.findNode(temp)->getVector()[0].first->getDate()->getNombre()*/
+            <<", al NO "<<lugars.findNode(temp)->getVector()[0].first->getDate()->getNombre();
+           // <<", al SE "<<lugars.findNode(temp)->getVector()[1].first->getDate()->getNombre();
         }
-
-
-
+        cout<<"sali"<<endl;
 
     }
-
-
-}
+    else
+    {
+        cout<<"No se han ingresado lugares."<<endl;
+    }
+ }
