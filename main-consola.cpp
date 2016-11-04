@@ -38,7 +38,7 @@ int main()
     Graph<lugar*> graphlugares;
     string opcion,comando;
     getline( cin, opcion );
-    while( opcion != "exit" || opcion != "fin" )
+    while( opcion != "exit" && opcion != "fin" )
     {
         stringstream ss( opcion );
 
@@ -83,14 +83,14 @@ int main()
         }
         else if( comando == "eliminarSitio" )
         {
-            int lat, lon ;
+            double lat, lon ;
             ss >> lat >> lon ;
             eliminarSitio(graphlugares, lugares, lat, lon );
         }
 
         else if( comando == "buscarVecinos" )
         {
-            int lat, lon ;
+            double lat, lon ;
             ss >> lat >> lon ;
             mostrarVecinosNONESOSE(graphlugares,lat,lon);
         }
@@ -330,6 +330,8 @@ lugar * obtenerSitio3(Graph<lugar *> &lugars,double x,double y)
     lugar* aux;
     for (int w=0;w<lugars.getList().size();w++)
     {
+        //cout<<x<<" "<<y <<" " <<lugars.getList()[w]->getDate()->getLat()<<" "<<lugars.getList()[w]->getDate()->getLon()<<" ";
+        //cout<<lugars.getList()[w]->getDate()->getNombre()<<"-----"<<distancia<<"______"<<(lugars.getList()[w])->getDate()->calcularDistanciaM(x,y)<<"\n";
         if(w==0)
         {
             distancia=(lugars.getList()[w])->getDate()->calcularDistanciaM(x,y);
@@ -337,11 +339,14 @@ lugar * obtenerSitio3(Graph<lugar *> &lugars,double x,double y)
         }
         else
         {
-            if(((lugars.getList()[w])->getDate()->calcularDistanciaM(x,y))<distancia)
+            if((((lugars.getList()[w])->getDate())->calcularDistanciaM(x,y))< distancia)
             {
+                distancia=(((lugars.getList()[w])->getDate())->calcularDistanciaM(x,y));
                  aux=lugars.getList()[w]->getDate();
             }
         }
+        //printf("\n pipi -- %lf ----  %lf ---",distancia ,((lugars.getList()[w])->getDate()->calcularDistanciaM(x,y)));
+
     }
     return aux;
 }
@@ -499,13 +504,15 @@ void armarGrafo(Graph<lugar *>& lugars)
                 lugaresSE.push_back(v[a]);
             }
         }
-        cout<<"no"<<lugaresNO.size()<<"ne"<<lugaresNE.size()<<"se"<<lugaresSE.size()<<"so"<<lugaresSO.size()<<"\n";
-        lugar* menor=new lugar();
-        menor->setNombre("NO HAY");
-        menor->setLat(90000);
-         menor->setLon(90000);
+        //cout<<"no"<<lugaresNO.size()<<"ne"<<lugaresNE.size()<<"se"<<lugaresSE.size()<<"so"<<lugaresSO.size()<<"\n";
+        lugar* temp=new lugar();
+        temp->setNombre("NO HAY");
+        temp->setLat(90000);
+         temp->setLon(90000);
+
+         lugar* menor=temp;
         double distanciamenor=-1;
-        for(int b=0; b<lugaresNO.size(); b++)
+        for(int b=0; b<lugaresNO.size(); b++)//SO
         {
             if(b==0)
             {
@@ -518,11 +525,16 @@ void armarGrafo(Graph<lugar *>& lugars)
                 distanciamenor=(v[w]->calcularDistanciaM(lugaresNO[b]->getLat(),lugaresNO[b]->getLon()));
             }
         }
-        lugars.addArist(v[w],menor,distanciamenor);
-        /*
-        menor->setNombre("NO HAY");
-        menor->setLat(90000);
-         menor->setLon(90000);
+        if(menor==temp)
+        {
+            lugars.findNode(v[w])->getVector().push_back(make_pair(new NodeGraph<lugar*>(menor),distanciamenor));
+        }
+        else
+            lugars.addArist(v[w],menor,distanciamenor);
+
+
+
+        menor=temp;
         distanciamenor=-1;
         for(int b=0; b<lugaresNE.size(); b++)
         {
@@ -537,10 +549,12 @@ void armarGrafo(Graph<lugar *>& lugars)
                 distanciamenor=(v[w]->calcularDistanciaM(lugaresNE[b]->getLat(),lugaresNE[b]->getLon()));
             }
         }
-        lugars.addArist(v[w],menor,distanciamenor);
-        /*
-        menor->setNombre("NO HAY");
+        if(menor==temp)
+           lugars.findNode(v[w])->getVector().push_back(make_pair(new NodeGraph<lugar*>(menor),distanciamenor));
+        else
+            lugars.addArist(v[w],menor,distanciamenor);
 
+        menor=temp;
         distanciamenor=-1;
         for(int b=0; b<lugaresSO.size(); b++)
         {
@@ -555,8 +569,11 @@ void armarGrafo(Graph<lugar *>& lugars)
                 distanciamenor=(v[w]->calcularDistanciaM(lugaresSO[b]->getLat(),lugaresSO[b]->getLon()));
             }
         }
-        lugars.addArist(v[w],menor,distanciamenor);
-        menor->setNombre("NO HAY");
+        if(menor==temp)
+            lugars.findNode(v[w])->getVector().push_back(make_pair(new NodeGraph<lugar*>(menor),distanciamenor));
+        else
+            lugars.addArist(v[w],menor,distanciamenor);
+       menor=temp;
         distanciamenor=-1;
         for(int b=0; b<lugaresSE.size(); b++)
         {
@@ -570,7 +587,11 @@ void armarGrafo(Graph<lugar *>& lugars)
                 menor=lugaresSE[b];
                 distanciamenor=(v[w]->calcularDistanciaM(lugaresSE[b]->getLat(),lugaresSE[b]->getLon()));
             }
-        }*/
+        }
+        if(menor==temp)
+          lugars.findNode(v[w])->getVector().push_back(make_pair(new NodeGraph<lugar*>(menor),distanciamenor));
+        else
+            lugars.addArist(v[w],menor,distanciamenor);
     }
 }
 
@@ -591,9 +612,10 @@ void mostrarVecinosNONESOSE(Graph<lugar *>& lugars, double ylat, double xlon)
         {
             cout<<" entre 2"<<endl;
             cout<<"Los vecinos del sitio "<<temp->getNombre()
-            /*<</*" son: al NE "<<lugars.findNode(temp)->getVector()[0].first->getDate()->getNombre()*/
-            <<", al NO "<<lugars.findNode(temp)->getVector()[0].first->getDate()->getNombre();
-           // <<", al SE "<<lugars.findNode(temp)->getVector()[1].first->getDate()->getNombre();
+            <<" son: al SO "<<lugars.findNode(temp)->getVector()[0].first->getDate()->getNombre()
+            <<", al NO "<<lugars.findNode(temp)->getVector()[1].first->getDate()->getNombre()
+            <<", al SE "<<lugars.findNode(temp)->getVector()[2].first->getDate()->getNombre()
+            <<", al NE "<<lugars.findNode(temp)->getVector()[3].first->getDate()->getNombre();
         }
         cout<<"sali"<<endl;
 
