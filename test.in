@@ -1,0 +1,6 @@
+crearSitio "jkl" 1 2.36 -2.88
+crearSitio "jkl" 1 -0.28 0.16
+crearSitio "jkl" 1 1.7 4.12
+crearSitio "jkl" 1 3.02 2.78
+crearSitio "jkl" 1 3.74 -1.14 
+crearPuntoInfo 1

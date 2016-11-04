@@ -26,7 +26,7 @@ public:
   void plane(  std::vector< R >& vplane);
   void allNode( bool s );
   int cantNodes();
-  void  crearPuntoInfo( int n , std::vector< R > &v );
+  void  crearPuntoInfo( int n , std::vector< std::pair< double , double > > &v );
 };
 
 #include "Graph.hxx"

@@ -81,4 +81,9 @@ void lugar::setLon(double const aux)
 {
     this->lon=aux;
 }
+bool lugar::operator<( const lugar &o )const
+{
+  return this->lon==o.lon ? this->lat < o.lat : this->lon < o.lon;
+}
+
 #endif

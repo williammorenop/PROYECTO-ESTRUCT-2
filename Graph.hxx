@@ -192,21 +192,26 @@ int  Graph< R >::cantNodes()
 }
 
 template <typename R>
-void  crearPuntoInfo( int n , std::vector< R > &v )
+void  Graph< R >::crearPuntoInfo( int n , std::vector< std::pair< double , double > > &v )
 {
   v.clear();
-  vector< R > ord( vectorN.size() );
+  std::vector< std::pair< double , double > > ord( this->vectorN.size() );
   for( int i = 0 ; i < (int) this->vectorN.size() ; ++i )
-      ord[ i ] = this->vectorN[i]->getDate();
+  {
+    ord[ i ].first = this->vectorN[i]->getDate()->getLat() ;
+    ord[ i ].second = this->vectorN[i]->getDate()->getLon() ;
+  }
   sort( ord.begin() , ord.end() );
+  // for( int i = 0 ; i <  ord.size() ; ++i )
+    // std::cout << ord[i].first << " " << ord[i].second << std::endl;
   int pos = 0;
   int cont = 0;
   int tam = ord.size();
   while( n && tam > 0 )
   {
-    int lim = (( tam + cont )/n) ;
+    int lim = (( tam  )/n) ;
     if( lim == 1 )
-      v.push_back( ord[cont] );
+      v.push_back( std::make_pair( ord[cont].first , ord[ cont ].second ) );
     else if ( lim != 0 )
     {
       double A=0;
@@ -214,17 +219,35 @@ void  crearPuntoInfo( int n , std::vector< R > &v )
       x = y = 0;
       for( int i = 0 ; i  < lim-1 ; ++i)
       {
-          double temp =( ord[ cont + i ].lon*ord[ cont + i +1 ].lat - ord[ cont +i + 1 ].lon * ord[ cont + i ].lat );
+          double temp =( (ord[ cont + i ].second*ord[ cont + i +1 ].first) - (ord[ cont +i + 1 ].second * ord[ cont + i ].first ));
+          // std::cout << "in "<< i << " = " << temp << std::endl;
           A += temp;
-          x += (ord[ cont + i ].lon + ord[ cont + i + 1].lon)*temp;
-          y += (ord[ cont + i ].lat + ord[ cont + i + 1].lat)*temp;
+          x += (ord[ cont + i ].second + ord[ cont + i + 1].second)*temp;
+          y += (ord[ cont + i ].first + ord[ cont + i + 1].first)*temp;
       }
+      double temp =( (ord[ cont + lim -1  ].second*ord[ cont  ].first) - (ord[ cont ].second * ord[ cont +lim-1   ].first) );
+      A += temp;
+      x += (ord[ cont + lim -1 ].second + ord[ cont ].second)*temp;
+      y += (ord[ cont + lim -1  ].first + ord[ cont ].first)*temp;
+      // std::cout << "inul " << " = " << temp << std::endl;
+
       A /= 2;
+      A = fabs(A);
       x /= 6*A;
       y /= 6*A;
-      v.push_back( R(y,x) );
+      if( (ord[ cont ].second < 0 && x > 0 )|| (ord[ cont ].second > 0 && x < 0 ))
+        x*=-1;
+      if( (ord[ cont ].first < 0 && y > 0 )|| (ord[ cont ].first > 0 && y < 0 ))
+        y*=-1;
+
+      v.push_back( std::make_pair(y,x) );
+      // std::cout <<" se metio " << A << " " << x << " "  << y << std::endl;
     }
+    // std::cout << "estoy en " << cont << " faltan "<<  n  << " lim " << lim << " tam " << tam << std::endl;
     --n;
     tam -= lim;
+    cont += lim;
+    // std::cout << "salgo con "<< cont << " n " << n << " tam " << tam << std::endl;
   }
+
 }

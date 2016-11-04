@@ -33,6 +33,8 @@ public:
 
   double getLat();
   double getLon();
+
+  bool operator<( const lugar &o )const;
 };
 
 #endif
