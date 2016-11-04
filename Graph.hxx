@@ -253,3 +253,20 @@ void  Graph< R >::crearPuntoInfo( int n , std::vector< std::pair< double , doubl
   }
 
 }
+template <typename R>
+void Graph<R>::buscarXUbicacion( double xMax , double yMax , double xMin , double yMin , std::vector< R > &v  )
+{
+  for( int i = 0 ; i  < (int)this->vectorN.size() ; ++i )
+  {
+    if( isRange(xMax,yMax,xMin,yMin,this->vectorN[i]->getDate()) )
+    {
+      v.push_back(this->vectorN[i]->getDate() );
+    }
+  }
+}
+
+template <typename R >
+bool Graph<R>::isRange(double xMax , double yMax , double xMin , double yMin , R d )
+{
+  return xMax >= d->getLon() && yMax >= d->getLat() && xMin <= d->getLon() && yMin <= d->getLat() ;
+}

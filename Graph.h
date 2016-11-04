@@ -27,6 +27,8 @@ public:
   void allNode( bool s );
   int cantNodes();
   void  crearPuntoInfo( int n , std::vector< std::pair< double , double > > &v );
+  void buscarXUbicacion( double xMax , double yMax , double xMin , double yMin , std::vector< R > &v  );
+  bool isRange(double xMax , double yMax , double xMin , double yMin , R d );
 };
 
 #include "Graph.hxx"

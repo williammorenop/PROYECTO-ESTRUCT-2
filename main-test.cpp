@@ -104,9 +104,21 @@ int main()
           graphlugares.crearPuntoInfo( n , v );
           for( int i = 0 ; i < v.size() ; ++i )
           {
-            // printf("-\tPunto [%d] ubicado en (%lf, %lf).\n", i , v[i].first, v[i].second );
-            printf("%lf %lf\n", v[i].first, v[i].second );
+            printf("-\tPunto [%d] ubicado en (%lf, %lf).\n", i , v[i].first, v[i].second );
+            // printf("%lf %lf\n", v[i].first, v[i].second );
           }
+        }
+        else if( comando == "buscarXUbicacion" )
+        {
+          double xMax,xMin,yMax,yMin;
+          ss >> xMax >> yMax >> xMin >> yMin;
+          vector< lugar* > v;
+          graphlugares.buscarXUbicacion( xMax , yMax , xMin , yMin , v );
+          for( int i = 0 ; i < (int)v.size() ; ++i )
+          {
+            printf("\t- %s de tipo %d, ubicado en (%lf,%lf).\n", v[i]->getNombre().c_str() , v[i]->getTipo() , v[i]->getLat() , v[i]->getLon() );
+          }
+          // cout << "sali" << endl;
         }
         else
         {
